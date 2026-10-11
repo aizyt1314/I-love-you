@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>生日快乐</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    body {
+        background: #000;
+        position: relative;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+    }
+
+    /* 黑色星空开场层 */
+    .starfield {
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(1px 1px at 15% 25%, #fff, transparent),
+            radial-gradient(1px 1px at 35% 70%, #fff, transparent),
+            radial-gradient(1.5px 1.5px at 60% 20%, #fff, transparent),
+            radial-gradient(1px 1px at 75% 80%, #fff, transparent),
+            radial-gradient(1px 1px at 85% 40%, #fff, transparent),
+            radial-gradient(1.2px 1.2px at 25% 55%, #fff, transparent),
+            radial-gradient(1px 1px at 45% 45%, #fff, transparent),
+            radial-gradient(1px 1px at 55% 85%, #fff, transparent),
+            radial-gradient(1px 1px at 80% 15%, #fff, transparent),
+            radial-gradient(1.3px 1.3px at 10% 80%, #fff, transparent);
+        background-size: 100% 100%;
+        opacity: 0;
+        z-index: 5;
+        pointer-events: none;
+        animation: starfieldFade 2s ease forwards;
+    }
+
+    @keyframes starfieldFade {
+        to { opacity: 1; }
+    }
+
+    /* 最终蓝色生日背景层 */
+    .birthday-bg {
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(circle at 12% 8%, rgba(170, 220, 255, 0.9), transparent 38%),
+            radial-gradient(circle at 88% 12%, rgba(135, 210, 255, 0.85), transparent 42%),
+            radial-gradient(circle at 8% 92%, rgba(150, 230, 235, 0.8), transparent 40%),
+            radial-gradient(circle at 94% 88%, rgba(180, 190, 255, 0.8), transparent 44%),
+            linear-gradient(135deg,
+                #9cd6ff 0%,
+                #a8e1ff 22%,
+                #b7edf5 48%,
+                #c7e2ff 74%,
+                #d4e0ff 100%);
+        background-size: 120% 120%;
+        animation: bgFlow 18s ease-in-out infinite alternate;
+        opacity: 0;
+        z-index: 0;
+        pointer-events: none;
+        transition: opacity 1.6s ease;
+    }
+
+    @keyframes bgFlow {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 4% 4%; }
+    }
+
+    .birthday-bg.show {
+        opacity: 1;
+    }
+
+    .birthday-bg::before {
+        content: "";
+        position: absolute;
+        width: 560px;
+        height: 560px;
+        background: radial-gradient(circle, rgba(255,255,255,0.6), transparent 72%);
+        top: -140px;
+        left: -160px;
+        pointer-events: none;
+    }
+
+    .birthday-bg::after {
+        content: "";
+        position: absolute;
+        width: 460px;
+        height: 460px;
+        background: radial-gradient(circle, rgba(255,255,255,0.35), transparent 72%);
+        bottom: -110px;
+        right: -140px;
+        pointer-events: none;
+    }
+
+    #particleCanvas {
+        position: absolute;
+        top:0;left:0;
+        width:100%;height:100%;
+        pointer-events:none;
+        z-index:1;
+    }
+
+    /* 流星 */
+    .meteor {
+        position: absolute;
+        top: -10%;
+        left: -10%;
+        width: 140px;
+        height: 2px;
+        background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 40%, rgba(255,210,230,1) 100%);
+        transform: rotate(25deg);
+        opacity: 0;
+        z-index: 6;
+        pointer-events: none;
+        filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
+    }
+
+    .meteor.show {
+        animation: meteorMove 1.6s ease-in forwards;
+    }
+
+    @keyframes meteorMove {
+        0% {
+            opacity: 0;
+            transform: translate(0, 0) rotate(25deg);
+        }
+        10% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+            transform: translate(140vw, 140vh) rotate(25deg);
+        }
+    }
+
+    /* “我爱你”开场大字 */
+    .love-intro {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.85);
+        font-family: "Ma Shan Zheng", "STKaiti", "KaiTi", cursive;
+        font-size: 220px;
+        letter-spacing: 24px;
+        color: #ff4d6d;
+        text-shadow:
+            0 0 20px rgba(255, 77, 109, 0.6),
+            0 0 40px rgba(255, 77, 109, 0.35);
+        white-space: nowrap;
+        opacity: 0;
+        z-index: 7;
+        pointer-events: none;
+    }
+
+    .love-intro.show {
+        animation: loveFade 3.4s ease-in-out forwards;
+    }
+
+    @keyframes loveFade {
+        0% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.85);
+        }
+        20% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        80% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        100% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1.06);
+        }
+    }
+
+    /* 倒计时 */
+    .countdown {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: "Ma Shan Zheng", "STKaiti", "KaiTi", cursive;
+        font-size: 260px;
+        color: #fff;
+        text-shadow:
+            0 0 25px rgba(255, 255, 255, 0.9),
+            0 0 60px rgba(255, 120, 180, 0.6);
+        z-index: 8;
+        pointer-events: none;
+        opacity: 0;
+    }
+
+    .countdown.pop {
+        animation: countPop 1s ease-out forwards;
+    }
+
+    @keyframes countPop {
+        0% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.4);
+        }
+        30% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.15);
+        }
+        70% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        100% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1.3);
+        }
+    }
+
+    .birthday-card {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        white-space: nowrap;
+        opacity: 0;
+        margin-top: 40px;
+    }
+
+    .birthday-card.show {
+        opacity: 1;
+    }
+
+    .title {
+        font-family: "Ma Shan Zheng", "STKaiti", "KaiTi", cursive;
+        font-size: 160px;
+        font-weight: 400;
+        letter-spacing: 8px;
+        transform: scaleY(1.4) scaleX(0.82);
+        font-style: italic;
+        white-space: nowrap;
+        display: inline-block;
+    }
+
+    .title span {
+        display: inline-block;
+        background: linear-gradient(135deg,
+            #ff4d6d 0%,
+            #e63946 35%,
+            #c1121f 70%,
+            #ff4d6d 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter:
+            drop-shadow(0 4px 10px rgba(230, 57, 70, 0.45))
+            drop-shadow(0 0 18px rgba(255, 120, 140, 0.35));
+        opacity:0;
+        transform: translateY(-80px) scale(0.85);
+        animation: inkDrop 0.8s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+
+    .title span:nth-child(1){ animation-delay:0s; }
+    .title span:nth-child(2){ animation-delay:0.4s; }
+    .title span:nth-child(3){ animation-delay:0.8s; }
+    .title span:nth-child(4){ animation-delay:1.2s; }
+
+    @keyframes inkDrop {
+        to {
+            opacity:1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .title{
+        animation: titleBreath 3.8s ease-in-out 1.4s infinite;
+    }
+
+    @keyframes titleBreath {
+        0%,100% {
+            filter:
+                drop-shadow(0 4px 10px rgba(230, 57, 70, 0.45))
+                drop-shadow(0 0 18px rgba(255, 120, 140, 0.35));
+        }
+        50% {
+            filter:
+                drop-shadow(0 5px 14px rgba(230, 57, 70, 0.52))
+                drop-shadow(0 0 26px rgba(255, 120, 140, 0.42));
+        }
+    }
+
+    .title:hover span{
+        transform: scale(1.04) scaleY(1.4) scaleX(0.82);
+        filter:
+            drop-shadow(0 6px 14px rgba(230, 57, 70, 0.55))
+            drop-shadow(0 0 26px rgba(255, 120, 140, 0.5));
+        transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    .title::before,
+    .title::after {
+        content: "";
+        position: absolute;
+        background: rgba(230, 57, 70, 0.55);
+        border-radius: 50%;
+        filter: blur(0.6px);
+        opacity:0;
+        animation: wireFadeIn 1.2s ease forwards 1.4s;
+    }
+
+    @keyframes wireFadeIn {
+        to {opacity:1;}
+    }
+
+    .title::before {
+        width: 110px;
+        height: 3px;
+        left: 185px;
+        top: 42%;
+        transform: rotate(-8deg);
+        box-shadow: 0 0 2px rgba(230, 57, 70, 0.6);
+    }
+
+    .title::after {
+        width: 100px;
+        height: 3px;
+        left: 480px;
+        top: 44%;
+        transform: rotate(6deg);
+        box-shadow: 0 0 2px rgba(230, 57, 70, 0.6);
+    }
+
+    .subtitle {
+        font-family: "Dancing Script", cursive;
+        font-size: 42px;
+        font-weight: 700;
+        color: rgba(255, 105, 135, 0.55);
+        letter-spacing: 1px;
+        margin-top: 16px;
+        font-style: italic;
+        transform: scaleY(1.15);
+        white-space: nowrap;
+        text-shadow: 0 0 8px rgba(255, 182, 193, 0.45);
+        opacity:0;
+        animation: subIn 1.4s ease forwards 1.8s;
+    }
+
+    @keyframes subIn{
+        to{opacity:1;}
+    }
+
+    .red-line {
+        position: absolute;
+        right: -40px;
+        top: 52%;
+        width: 3px;
+        height: 110px;
+        background: linear-gradient(to bottom,
+            #e63946 0%,
+            #ff4d6d 40%,
+            rgba(255, 77, 109, 0.1) 100%);
+        border-radius: 2px;
+        transform: rotate(1.5deg);
+        filter: drop-shadow(0 0 4px rgba(230, 57, 70, 0.5));
+        opacity:0;
+        animation: lineIn 1.2s ease forwards 1.6s;
+    }
+
+    @keyframes lineIn{
+        to{opacity:1;}
+    }
+
+    .ink-dot {
+        position: absolute;
+        right: -52px;
+        top: 78%;
+        width: 14px;
+        height: 14px;
+        background: #e63946;
+        border-radius: 50%;
+        opacity:0;
+        filter: blur(1px);
+        animation: dotIn 1.2s ease forwards 1.7s;
+    }
+
+    @keyframes dotIn{
+        to{opacity:0.55;}
+    }
+
+    /* 卡片层 */
+    .card-wrap{
+        position:absolute;
+        inset:0;
+        z-index:10;
+        pointer-events:none;
+    }
+
+    .msg-card{
+        position:absolute;
+        width:150px;
+        height:58px;
+        background:rgba(255,255,255,0.92);
+        border-radius:12px;
+        box-shadow:0 4px 14px rgba(255,80,120,0.25);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:10px;
+        text-align:center;
+        font-family:"Ma Shan Zheng",cursive;
+        font-size:18px;
+        color:#c1121f;
+        opacity:0;
+        transform:scale(0.5);
+        transition: all 0.6s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    /* 外层卡片：更大、更亮 */
+    .msg-card.outer-card{
+        width:170px;
+        height:64px;
+        background:rgba(255,240,245,0.96);
+        font-size:20px;
+        color:#a4133c;
+        box-shadow:0 6px 22px rgba(255,80,120,0.45);
+        border:1px solid rgba(255,182,193,0.6);
+    }
+
+    /* 内层卡片：更小、更淡 */
+    .msg-card.inner-card{
+        background:rgba(255,255,255,0.78);
+        color:#8d99ae;
+        box-shadow:0 3px 10px rgba(140,140,160,0.25);
+    }
+
+    /* 最后一张紫色卡片 */
+    .msg-card.last-card{
+        background:rgba(230,210,255,0.95);
+        color:#5a189a;
+        box-shadow:0 6px 22px rgba(138,43,226,0.5);
+        border:1px solid rgba(138,43,226,0.6);
+    }
+
+    .msg-card.show{
+        opacity:1;
+        transform:scale(1);
+    }
+
+    .msg-card.gather{
+        transition: all 1.4s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    /* ========== 右侧 按钮：爱心形成后才出现 ========== */
+    .cake-btn{
+        position: fixed;
+        right:30px;
+        top:50%;
+        transform: translateY(-50%);
+        z-index:99;
+        padding:16px 22px;
+        font-family:"Ma Shan Zheng",cursive;
+        font-size:26px;
+        border:none;
+        border-radius:50px;
+        background:linear-gradient(135deg,#ff758f,#ff97b7);
+        color:#fff;
+        box-shadow:0 0 16px rgba(255,117,143,0.55);
+        cursor:pointer;
+        transition:0.3s ease;
+        opacity:0;
+        pointer-events:none;
+        transform: translateY(-50%) translateX(40px);
+    }
+    .cake-btn.show{
+        opacity:1;
+        pointer-events:auto;
+        transform: translateY(-50%) translateX(0);
+    }
+    .cake-btn:hover{
+        transform: translateY(-50%) scale(1.08);
+        box-shadow:0 0 26px rgba(255,117,143,0.7);
+    }
+
+    /* ========== 烟花弹窗 ========== */
+    .firework-modal{
+        position:fixed;
+        inset:0;
+        background:
+            radial-gradient(circle at 20% 20%, rgba(120,180,255,0.35), transparent 45%),
+            radial-gradient(circle at 80% 30%, rgba(180,220,255,0.3), transparent 50%),
+            radial-gradient(circle at 50% 90%, rgba(150,200,255,0.35), transparent 50%),
+            linear-gradient(135deg, #0b1a3a 0%, #10254f 45%, #133066 100%);
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        z-index:110;
+        opacity:0;
+        pointer-events:none;
+        transition:opacity 0.5s ease;
+    }
+    .firework-modal.open{
+        opacity:1;
+        pointer-events:auto;
+    }
+    .firework-close{
+        position:absolute;
+        top:30px;
+        right:30px;
+        width:46px;
+        height:46px;
+        border-radius:50%;
+        border:none;
+        background:rgba(255,255,255,0.12);
+        color:#d6ecff;
+        font-size:24px;
+        cursor:pointer;
+        backdrop-filter:blur(8px);
+        z-index:20;
+    }
+    #fireworkCanvas{
+        width:100%;
+        height:100%;
+    }
+</style>
+</head>
+<body>
+  <div class="starfield"></div>
+  <div class="birthday-bg" id="birthdayBg"></div>
+  <canvas id="particleCanvas"></canvas>
+
+  <div class="meteor" id="meteor"></div>
+  <div class="love-intro" id="loveIntro">我爱你</div>
+  <div class="countdown" id="countdown"></div>
+
+  <div class="birthday-card" id="birthdayCard">
+      <div class="title">
+          <span>生</span><span>日</span><span>快</span><span>乐</span>
+      </div>
+      <div class="red-line"></div>
+      <div class="ink-dot"></div>
+      <div class="subtitle">Happy Birthday</div>
+  </div>
+
+  <div class="card-wrap" id="cardWrap"></div>
+
+  <!-- 右侧按钮 -->
+  <button class="cake-btn" id="openCakeBtn">i粥铺</button>
+
+  <!-- 烟花弹窗 -->
+  <div class="firework-modal" id="fireworkModal">
+      <button class="firework-close" id="fireworkClose">✕</button>
+      <canvas id="fireworkCanvas"></canvas>
+  </div>
+
+<script>
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let ripples = [];
+let confettiList = [];
+let heartList = [];
+let startHeartFall = false;
+
+const confettiColors = [
+    "#ff6b7b", "#ffd166", "#4ecdc4", "#a084ff", "#ffb4d8", "#fff"
+];
+
+function resizeCanvas(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Particle{
+    constructor(){
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.radius = Math.random() * 1.4 + 0.2;
+        this.speedX = (Math.random() - 0.5) * 0.25;
+        this.speedY = (Math.random() - 0.5) * 0.25;
+        this.opacity = Math.random() * 0.25 + 0.08;
+    }
+    update(){
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if(this.x <0) this.x = canvas.width;
+        if(this.x > canvas.width) this.x = 0;
+        if(this.y <0) this.y = canvas.height;
+        if(this.y > canvas.height) this.y = 0;
+    }
+    draw(){
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(255,255,255,${this.opacity})`;
+        ctx.fill();
+    }
+}
+
+class Ripple {
+    constructor(x,y){
+        this.x = x;
+        this.y = y;
+        this.radius = 0;
+        this.opacity = 0.45;
+    }
+    update(){
+        this.radius += 2.8;
+        this.opacity -= 0.012;
+    }
+    draw(){
+        if(this.opacity <=0) return;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(220,40,60,${this.opacity})`;
+        ctx.lineWidth = 2.2;
+        ctx.stroke();
+    }
+}
+
+class Confetti {
+    constructor(x,y){
+        this.x = x;
+        this.y = y;
+        this.w = Math.random() * 7 + 3;
+        this.h = Math.random() * 3 + 2;
+        this.vx = (Math.random() - 0.5) * 5;
+        this.vy = (Math.random() - 0.5) * 4 - 2;
+        this.gravity = 0.045;
+        this.rotate = Math.random() * Math.PI * 2;
+        this.rotSpeed = (Math.random() - 0.5) * 0.12;
+        this.color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        this.opacity = 1;
+        this.life = 0;
+        this.maxLife = Math.random() * 140 + 120;
+    }
+    update(){
+        this.vy += this.gravity;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rotate += this.rotSpeed;
+        this.life++;
+
+        if(this.life > this.maxLife){
+            this.opacity -= 0.012;
+        }
+    }
+    draw(){
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotate);
+        ctx.globalAlpha = this.opacity;
+        ctx.fillStyle = this.color;
+        ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
+        ctx.restore();
+    }
+}
+
+class Heart {
+    constructor(){
+        this.x = Math.random() * canvas.width;
+        this.y = -40;
+        this.size = Math.random() * 16 + 8;
+        this.speedY = Math.random() * 1.2 + 0.6;
+        this.speedX = Math.random() * 0.6 - 0.3;
+        this.rotate = Math.random() * Math.PI * 2;
+        this.rotSpeed = (Math.random() - 0.5) * 0.02;
+        this.opacity = Math.random() * 0.4 + 0.2;
+    }
+    update(){
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.rotate += this.rotSpeed;
+        if(this.y > canvas.height + 20){
+            this.y = -40;
+            this.x = Math.random() * canvas.width;
+        }
+    }
+    draw(){
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotate);
+        ctx.globalAlpha = this.opacity;
+        ctx.fillStyle="#ff7b9c";
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.bezierCurveTo(-this.size/2, -this.size/2, -this.size, this.size/3, 0, this.size);
+        ctx.bezierCurveTo(this.size, this.size/3, this.size/2, -this.size/2, 0,0);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+window.addEventListener('click',(e)=>{
+    ripples.push(new Ripple(e.clientX, e.clientY));
+    for(let i=0; i<40; i++){
+        confettiList.push(new Confetti(e.clientX, e.clientY));
+    }
+});
+
+function init(){
+    particles = [];
+    for(let i=0; i<45; i++) particles.push(new Particle());
+    for(let i=0;i<30;i++) heartList.push(new Heart());
+}
+
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    particles.forEach(p=>{p.update();p.draw();})
+
+    if(startHeartFall){
+        heartList.forEach(h=>{h.update();h.draw();})
+    }
+
+    for(let i=ripples.length-1; i>=0; i--){
+        const r = ripples[i];
+        r.update();
+        r.draw();
+        if(r.opacity <= 0) ripples.splice(i,1);
+    }
+
+    for(let i=confettiList.length-1; i>=0; i--){
+        const c = confettiList[i];
+        c.update();
+        c.draw();
+        if(c.opacity <=0 || c.y > canvas.height + 80){
+            confettiList.splice(i,1);
+        }
+    }
+
+    requestAnimationFrame(animate);
+}
+
+init();
+animate();
+
+// ========== 烟花系统：10秒后停止发射，等待剩余粒子自然消散再关闭弹窗 ==========
+const fireworkCanvas = document.getElementById("fireworkCanvas");
+const fireworkCtx = fireworkCanvas.getContext("2d");
+let fireworks = [];
+let fireParticles = [];
+let fireworkAnimId = null;
+let launchTimer = 0;
+let isFireworkRunning = false;
+let stopLaunch = false;
+
+function resizeFireworkCanvas(){
+    fireworkCanvas.width = window.innerWidth;
+    fireworkCanvas.height = window.innerHeight;
+}
+resizeFireworkCanvas();
+window.addEventListener("resize", resizeFireworkCanvas);
+
+class Firework {
+    constructor(sx, sy, tx, ty, color){
+        this.x = sx;
+        this.y = sy;
+        this.sx = sx;
+        this.sy = sy;
+        this.tx = tx;
+        this.ty = ty;
+        this.distanceToTarget = Math.hypot(tx - sx, ty - sy);
+        this.distanceTraveled = 0;
+        this.coordinates = [];
+        this.coordinateCount = 3;
+        while(this.coordinateCount--){
+            this.coordinates.push([this.x, this.y]);
+        }
+        this.angle = Math.atan2(ty - sy, tx - sx);
+        this.speed = 2;
+        this.acceleration = 1.05;
+        this.brightness = Math.random() * 20 + 50;
+        this.color = color;
+    }
+    update(index){
+        this.coordinates.pop();
+        this.coordinates.unshift([this.x, this.y]);
+        this.speed *= this.acceleration;
+        const vx = Math.cos(this.angle) * this.speed;
+        const vy = Math.sin(this.angle) * this.speed;
+        this.distanceTraveled = Math.hypot(this.x + vx - this.sx, this.y + vy - this.sy);
+
+        if(this.distanceTraveled >= this.distanceToTarget){
+            createParticles(this.tx, this.ty, this.color);
+            fireworks.splice(index, 1);
+        } else {
+            this.x += vx;
+            this.y += vy;
+        }
+    }
+    draw(){
+        fireworkCtx.beginPath();
+        fireworkCtx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+        fireworkCtx.lineTo(this.x, this.y);
+        fireworkCtx.strokeStyle = `hsl(${this.color}, 100%, ${this.brightness}%)`;
+        fireworkCtx.lineWidth = 2;
+        fireworkCtx.stroke();
+    }
+}
+
+class FireParticle {
+    constructor(x, y, color){
+        this.x = x;
+        this.y = y;
+        this.coordinates = [];
+        this.coordinateCount = 5;
+        while(this.coordinateCount--){
+            this.coordinates.push([this.x, this.y]);
+        }
+        this.angle = Math.random() * Math.PI * 2;
+        this.speed = Math.random() * 10 + 2;
+        this.friction = 0.95;
+        this.gravity = 1;
+        this.hue = color + (Math.random() * 20 - 10);
+        this.brightness = Math.random() * 30 + 50;
+        this.alpha = 1;
+        this.decay = Math.random() * 0.015 + 0.008;
+    }
+    update(index){
+        this.coordinates.pop();
+        this.coordinates.unshift([this.x, this.y]);
+        this.speed *= this.friction;
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed + this.gravity;
+        this.alpha -= this.decay;
+
+        if(this.alpha <= this.decay){
+            fireParticles.splice(index, 1);
+        }
+    }
+    draw(){
+        fireworkCtx.beginPath();
+        fireworkCtx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+        fireworkCtx.lineTo(this.x, this.y);
+        fireworkCtx.strokeStyle = `hsla(${this.hue}, 100%, ${this.brightness}%, ${this.alpha})`;
+        fireworkCtx.lineWidth = 2;
+        fireworkCtx.stroke();
+    }
+}
+
+function createParticles(x, y, color){
+    let particleCount = 180;
+    while(particleCount--){
+        fireParticles.push(new FireParticle(x, y, color));
+    }
+}
+
+function launchFirework(){
+    const sx = fireworkCanvas.width / 2;
+    const sy = fireworkCanvas.height;
+    const tx = Math.random() * fireworkCanvas.width;
+    const ty = Math.random() * fireworkCanvas.height / 2;
+    const color = Math.random() * 360;
+    fireworks.push(new Firework(sx, sy, tx, ty, color));
+}
+
+function fireworkLoop(){
+    if(!isFireworkRunning) return;
+    fireworkCtx.globalCompositeOperation = "destination-out";
+    fireworkCtx.fillStyle = "rgba(11, 26, 58, 0.2)";
+    fireworkCtx.fillRect(0, 0, fireworkCanvas.width, fireworkCanvas.height);
+    fireworkCtx.globalCompositeOperation = "lighter";
+
+    let i = fireworks.length;
+    while(i--){
+        fireworks[i].draw();
+        fireworks[i].update(i);
+    }
+
+    let j = fireParticles.length;
+    while(j--){
+        fireParticles[j].draw();
+        fireParticles[j].update(j);
+    }
+
+    // 只有没有停止标记才继续发射新烟花
+    if(!stopLaunch){
+        launchTimer++;
+        if(launchTimer >= 14){
+            launchFirework();
+            launchTimer = 0;
+
+            if(Math.random() < 0.45){
+                launchFirework();
+            }
+            if(Math.random() < 0.25){
+                launchFirework();
+            }
+        }
+    }
+
+    // 当烟花和粒子全部消失，关闭弹窗
+    if(stopLaunch && fireworks.length === 0 && fireParticles.length ===0){
+        stopFirework();
+        return;
+    }
+
+    fireworkAnimId = requestAnimationFrame(fireworkLoop);
+}
+
+function stopFirework(){
+    fireworkModal.classList.remove('open');
+    if(fireworkAnimId){
+        cancelAnimationFrame(fireworkAnimId);
+        fireworkAnimId = null;
+    }
+    fireworks = [];
+    fireParticles = [];
+    isFireworkRunning = false;
+    stopLaunch = false;
+}
+
+// 按钮控制
+const openCakeBtn = document.getElementById('openCakeBtn');
+const fireworkModal = document.getElementById('fireworkModal');
+const fireworkClose = document.getElementById('fireworkClose');
+
+openCakeBtn.onclick = ()=>{
+    if(isFireworkRunning) return;
+    fireworkModal.classList.add('open');
+    isFireworkRunning = true;
+    stopLaunch = false;
+    fireworkLoop();
+
+    // 10秒后停止发射新烟花，等待现有粒子慢慢消散
+    setTimeout(()=>{
+        stopLaunch = true;
+    },10000);
+}
+
+fireworkClose.onclick = stopFirework;
+fireworkModal.onclick = (e)=>{
+    if(e.target === fireworkModal){
+        stopFirework();
+    }
+}
+
+// 时间线、48张卡片逻辑
+window.addEventListener('load', () => {
+    const meteor = document.getElementById('meteor');
+    const loveIntro = document.getElementById('loveIntro');
+    const countdown = document.getElementById('countdown');
+    const birthdayBg = document.getElementById('birthdayBg');
+    const birthdayCard = document.getElementById('birthdayCard');
+    const cardWrap = document.getElementById('cardWrap');
+
+    function playCountdown(number) {
+        countdown.textContent = number;
+        countdown.classList.remove('pop');
+        void countdown.offsetWidth;
+        countdown.classList.add('pop');
+    }
+
+    setTimeout(() => {
+        meteor.classList.add('show');
+    }, 800);
+
+    setTimeout(() => {
+        loveIntro.classList.add('show');
+    }, 2200);
+
+    setTimeout(() => {
+        playCountdown('3');
+    }, 5600);
+
+    setTimeout(() => {
+        playCountdown('2');
+    }, 6600);
+
+    setTimeout(() => {
+        playCountdown('1');
+    }, 7600);
+
+    setTimeout(() => {
+        birthdayBg.classList.add('show');
+        startHeartFall = true;
+    }, 8600);
+
+    setTimeout(() => {
+        birthdayCard.classList.add('show');
+    }, 9200);
+
+    // ============【48张卡片，最后一张：sjx，生日快乐，岁岁皆欢喜】============
+    const cardTexts = [
+        "愿你平安喜乐，万事顺意",
+        "记得好好吃饭，别太累",
+        "所有美好都奔向你",
+        "烦恼忧愁都远离你",
+        "永远保持热爱与温柔",
+        "愿世界对你温柔以待",
+        "每天都有小开心",
+        "愿你梦想开花结果",
+        "往后日子闪闪发光",
+        "前路漫漫，繁花相伴",
+        "愿你笑容永远灿烂",
+        "万事顺心，无灾无难",
+        "心中所想，皆能如愿",
+        "岁岁常欢愉，年年皆胜意",
+        "愿你被爱包围，被温柔以待",
+        "好好照顾自己，是最重要的事",
+        "愿你一路勇敢，一路被照亮",
+        "愿你所得皆所愿，所行化坦途",
+        "愿你眼里有光，心中有暖",
+        "愿你往后的每一天都值得",
+        "愿你自由、勇敢、被偏爱",
+        "愿你所有努力都有回应",
+        "愿你被世界温柔收藏",
+        "愿你岁岁平安，年年欢喜",
+        "愿你少一点烦恼，多一点幸运",
+        "愿你一直做自己，也一直被珍惜",
+        "愿你前路坦荡，未来可期",
+        "愿你有始有终，也有始料不及的惊喜",
+        "愿你把日子过成喜欢的样子",
+        "愿你在平凡里也能找到光",
+        "愿你被坚定选择，也被坚定偏爱",
+        "愿你所求皆如愿，所行皆坦途",
+        "愿你有好运，也有好好爱你的人",
+        "愿你往后的路都宽敞明亮",
+        "愿你永远有重新开始的勇气",
+        "愿你在每一个夜晚都安心入睡",
+        "愿你在每一个清晨都有期待",
+        "愿你被温柔以待，也被坚定选择",
+        "愿你拥有很多很多的幸福",
+        "愿你不慌不忙，自有光芒",
+        "愿你所有等待都变成值得",
+        "愿你心中有梦，脚下有路",
+        "愿你一直被爱，一直可爱",
+        "愿你在岁月里越来越顺",
+        "愿你往后的每一天都有小确幸",
+        "愿你一生平安，一生被爱",
+        "愿你被世界偷偷偏爱",
+        "sjx，生日快乐，岁岁皆欢喜"
+    ];
+
+    // 标准心形曲线点位，自动生成48个点位匹配卡片
+    function heartPoint(t, scale) {
+        const x = 16 * Math.pow(Math.sin(t), 3);
+        const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+        return { x: x * scale, y: y * scale };
+    }
+
+    const heartPoints = [];
+    for (let i = 0; i < cardTexts.length; i++) {
+        const t = (i / cardTexts.length) * Math.PI * 2;
+        heartPoints.push(heartPoint(t, 16));
+    }
+
+    const cardStartDelay = 9200 + 2000;
+    const cardInterval = 600; // 这里改成600ms，放慢弹出速度
+    let cardDomList = [];
+
+    for(let i=0; i<cardTexts.length; i++){
+        const div = document.createElement('div');
+        div.className = "msg-card outer-card";
+        if (i === cardTexts.length - 1) {
+            div.classList.add("last-card");
+        }
+        div.innerText = cardTexts[i];
+        const randX = (Math.random()-0.5)*700;
+        const randY = (Math.random()-0.5)*500;
+        div.style.left = `calc(50% + ${randX}px)`;
+        div.style.top = `calc(50% + ${randY}px)`;
+
+        cardWrap.appendChild(div);
+        cardDomList.push(div);
+
+        setTimeout(()=>{
+            div.classList.add('show');
+        }, cardStartDelay + i * cardInterval);
+    }
+
+    // 全部卡片弹出完毕，汇聚拼成清晰大爱心
+    setTimeout(()=>{
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+
+        cardDomList.forEach((card,idx)=>{
+            const p = heartPoints[idx];
+            card.classList.add("gather");
+            card.style.left = `${centerX + p.x}px`;
+            card.style.top = `${centerY + p.y}px`;
+        })
+
+        // 爱心形成后，按钮才出现
+        setTimeout(()=>{
+            openCakeBtn.classList.add('show');
+        }, 800);
+    }, cardStartDelay + cardTexts.length * cardInterval + 1400);
+});
+</script>
+</body>
+</html>
